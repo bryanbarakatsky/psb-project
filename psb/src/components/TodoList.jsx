@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Table from '@mui/material/Table'
 import TableBody from '@mui/material/TableBody'
 import TableCell from '@mui/material/TableCell'
@@ -12,7 +12,14 @@ import { Link } from 'react-router'
 import { initialData } from '../data/todoData'
 
 export const TodoList = () => {
-  const [data, setData] = useState(initialData)
+  const [data, setData] = useState(() => {
+    const stored = localStorage.getItem('todos')
+    return stored ? JSON.parse(stored) : initialData
+  })
+
+  useEffect(() => {
+    localStorage.setItem('todos', JSON.stringify(data))
+  }, [data])
 
   const handleCheckboxClick = (index) => {
     const newData = data.map((item, i) =>
@@ -24,6 +31,10 @@ export const TodoList = () => {
   const formatDate = (isoString) => {
     const date = new Date(isoString)
     return isNaN(date) ? 'Invalid date' : date.toLocaleString()
+  }
+
+  const handleEditClick = (row) => {
+    localStorage.setItem('selectedTodo', JSON.stringify(row))
   }
 
   return (
@@ -84,7 +95,16 @@ export const TodoList = () => {
                       !isDone ? '!text-red-500 cursor-pointer' : '!text-gray-400'
                     } hover:!text-blue-500`}
                   >
-                    {!isDone ? <Link state={{ todo: row }} to="/add-edit">{canEdit}</Link> : 'N/A'}
+                    {!isDone ? (
+                      <Link
+                        to="/add-edit"
+                        onClick={() => handleEditClick(row)}
+                      >
+                        {canEdit}
+                      </Link>
+                    ) : (
+                      'N/A'
+                    )}
                   </TableCell>
 
                   <TableCell align="right" className={stateColor}>
