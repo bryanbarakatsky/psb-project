@@ -4,6 +4,7 @@ import "./App.css";
 import Layout from "./components/Layout";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import TodoPage from "./pages/TodoPage";
+import AddEditPage from "./pages/AddEditPage";
 function App() {
   return (
     <>
@@ -11,6 +12,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Layout />}>
             <Route index element={<TodoPage />} />
+            <Route path="/add-edit" element={<AddEditPage />} />
           </Route>
         </Routes>
       </BrowserRouter>
