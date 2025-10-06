@@ -4,6 +4,10 @@ const handleSubmit = () => {
     alert("Form submitted")
 }
 
+const handleCompleted = () => {
+    alert("Todo completed")
+}
+
 const options = {
   year: "numeric",
   month: "numeric",
@@ -30,11 +34,11 @@ const Form = ({ }) => {
             </label>
 
             <label>
-                <input className="m-2 p-4" type="checkbox" name="todoCompleted" />
+                <input className="m-2 p-4" type="checkbox" name="todoCompleted" onClick={handleCompleted}/>
                 Completed
             </label>
 
-            <input className="bg-blue-500 w-24 p-4" type="submit" value="Submit" onClick={handleSubmit} />
+            <input className="bg-blue-500 w-24 p-4 rounded-lg" type="submit" value="Submit" onClick={handleSubmit} />
         </form>
     );
 };
