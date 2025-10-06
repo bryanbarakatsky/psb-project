@@ -8,22 +8,23 @@ import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox'
+import { Link } from "react-router";
 
-const createData = (description, dateCreated, action, state) => {
-  return { description, dateCreated, action, state }
+const createData = (description, dateCreated, state) => {
+  return { description, dateCreated, state }
 }
 
 const initialData = [
-  createData('Finish project proposal', '2025-10-06', 'Edit', 'Done'),
-  createData('Review pull requests', '2025-10-05', 'Edit', 'Done'),
-  createData('Team stand-up meeting', '2025-10-06', 'Edit', 'Not Done'),
-  createData('Send client invoice', '2025-10-04', 'Edit', 'Done'),
-  createData('Plan sprint backlog', '2025-10-03', 'Edit', 'Not Done'),  
-  createData('Finish project proposal', '2025-10-06', 'Edit', 'Done'),
-  createData('Review pull requests', '2025-10-05', 'Edit', 'Done'),
-  createData('Team stand-up meeting', '2025-10-06', 'Edit', 'Not Done'),
-  createData('Send client invoice', '2025-10-04', 'Edit', 'Done'),
-  createData('Plan sprint backlog', '2025-10-03', 'Edit', 'Not Done'),
+  createData('Finish project proposal', '2025-10-06', 'Done'),
+  createData('Review pull requests', '2025-10-05', 'Done'),
+  createData('Team stand-up meeting', '2025-10-06', 'Not Done'),
+  createData('Send client invoice', '2025-10-04', 'Done'),
+  createData('Plan sprint backlog', '2025-10-03', 'Not Done'),  
+  createData('Finish project proposal', '2025-10-06', 'Done'),
+  createData('Review pull requests', '2025-10-05', 'Done'),
+  createData('Team stand-up meeting', '2025-10-06', 'Not Done'),
+  createData('Send client invoice', '2025-10-04', 'Done'),
+  createData('Plan sprint backlog', '2025-10-03', 'Not Done'),
 ]
 
 export const TodoList = () => {
@@ -62,6 +63,7 @@ export const TodoList = () => {
               const isDone = row.state === 'Done'
               const textClass = isDone ? 'line-through text-gray-500' : ''
               const stateColor = isDone? '!text-green-500' : '!text-gray-500'
+              const canEdit = isDone ? 'N/A' : 'Edit'
               return (
                 <TableRow
                   key={id}
@@ -76,8 +78,8 @@ export const TodoList = () => {
                   <TableCell align="right" className={textClass}>
                     {row.dateCreated}
                   </TableCell>
-                  <TableCell align="right" className='cursor-pointer !text-red-500 hover:!text-blue-500'>
-                    {row.action}
+                  <TableCell align="right" className={`cursor-pointer ${!isDone ? '!text-red-500' : '!text-gray-500'} hover:!text-blue-500`}>
+                    <Link to="/add-edit">{canEdit}</Link>
                   </TableCell>
                   <TableCell align="right" className={stateColor}>
                     {row.state}
@@ -92,7 +94,7 @@ export const TodoList = () => {
         </Table>
       </TableContainer>
       <div className='ml-right'>
-        <Button variant="contained">Add</Button>
+        <Link to="/add-edit"><Button variant="contained">Add</Button></Link>
       </div>
     </div>
   )
