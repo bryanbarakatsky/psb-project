@@ -18,6 +18,10 @@ export const TodoList = () => {
   })
 
   useEffect(() => {
+    localStorage.removeItem("selectedTodo");
+  },[])
+
+  useEffect(() => {
     localStorage.setItem('todos', JSON.stringify(data))
   }, [data])
 
