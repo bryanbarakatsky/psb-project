@@ -6,6 +6,7 @@ import TableContainer from '@mui/material/TableContainer'
 import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
+import Button from '@mui/material/Button';
 
 const createData = (description, dateCreated, action, state) => {
   return { description, dateCreated, action, state }
@@ -21,7 +22,7 @@ const data = [
 
 export const TodoPage = () => {
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50">
+    <div className="flex flex-col gap-10 items-center justify-center min-h-screen bg-gray-50">
       <TableContainer
         component={Paper}
         sx={{ maxWidth: 800, boxShadow: 3, borderRadius: 2 }}
@@ -72,6 +73,9 @@ export const TodoPage = () => {
           </TableBody>
         </Table>
       </TableContainer>
+      <div className='ml-right'>
+        <Button variant="contained">Add</Button>
+      </div>
     </div>
   )
 }
