@@ -3,11 +3,16 @@ import { useState } from "react";
 import "./App.css";
 import Layout from "./components/Layout";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import TodoPage from "./pages/TodoPage";
 function App() {
   return (
     <>
       <BrowserRouter>
-        <Routes></Routes>
+        <Routes>
+          <Route path="/" element={<Layout />}>
+            <Route index element={<TodoPage />} />
+          </Route>
+        </Routes>
       </BrowserRouter>
     </>
   );

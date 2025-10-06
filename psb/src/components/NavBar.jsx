@@ -1,5 +1,5 @@
 import React from "react";
-
+import { Link } from "react-router-dom";
 const NavBar = () => {
   return (
     <div className="w-full h-24 p-5 border-gray shadow-lg">
@@ -8,7 +8,9 @@ const NavBar = () => {
           <a href="https://www.qa.com">
             <img src="../public/qaLogo.png" alt="QA Ltd"></img>
           </a>
-          <a className="font-bold text-xl text-[#003E50]">Todo App</a>
+          <Link to="/">
+            <p className="font-bold text-xl text-[#003E50]">Todo App</p>
+          </Link>
         </div>
       </div>
     </div>
