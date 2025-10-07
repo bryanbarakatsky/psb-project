@@ -71,7 +71,6 @@ const Form = () => {
   };
 
   const handleAdd = async (e) => {
-    e.preventDefault();
     try {
       const response = await axios.post("http://localhost:5000/add-task", {
         description: description,
@@ -79,7 +78,7 @@ const Form = () => {
       });
       if (response.status === 201) {
         console.log("Task added successfully:", response.data);
-        navigate("/");
+        // navigate("/");
         setDescription("");
         localStorage.removeItem("selectedTodo");
         const newData = JSON.parse(localStorage.getItem("todos")) || [];

@@ -39,15 +39,31 @@ export const TodoList = () => {
     console.log("data", data);
   }, [data]);
 
-  const handleCheckboxClick = (index) => {
+  const handleCheckboxClick = async (index) => {
     const newData = data.map((item, i) =>
       i === index ? { ...item, isCompleted: !item.isCompleted ? 1 : 0 } : item
     );
+
     setData(newData);
+    localStorage.setItem("todos", JSON.stringify(newData));
+    try {
+      console.log(data[index].isCompleted);
+      const res = await axios.put(`http://localhost:5000/mark-done/${index}`, {
+        isCompleted: data[index].isCompleted,
+      });
+      if (res.status == 200) {
+        console.log("successful");
+      } else {
+        console.log("unsuccessful");
+      }
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   const handleTickDone = async (index) => {
     try {
+      console.log(data[index].isCompleted);
       const res = await axios.put(`http://localhost:5000/mark-done/${index}`, {
         isCompleted: data[index].isCompleted,
       });
@@ -147,8 +163,6 @@ export const TodoList = () => {
                     <Checkbox
                       onClick={() => {
                         handleCheckboxClick(id);
-
-                        handleTickDone(row.id);
                       }}
                       color={isDone ? "success" : "default"}
                       checked={isDone}
