@@ -79,9 +79,12 @@ const Form = () => {
       });
       if (response.status === 201) {
         console.log("Task added successfully:", response.data);
+        navigate("/");
         setDescription("");
         localStorage.removeItem("selectedTodo");
-        navigate("/");
+        const newData = JSON.parse(localStorage.getItem("todos")) || [];
+        newData.push(response.data);
+        localStorage.setItem("todos", JSON.stringify(newData));
       } else {
         console.error("Failed to add task:", response.statusText);
       }
@@ -102,9 +105,9 @@ const Form = () => {
       );
       if (response.status === 200) {
         console.log("Task updated successfully:", response.data);
+        navigate("/");
         setDescription("");
         localStorage.removeItem("selectedTodo");
-        navigate("/");
       } else {
         console.error("Failed to update task:", response.statusText);
       }
