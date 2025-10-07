@@ -54,6 +54,7 @@ const Form = () => {
     localStorage.setItem("todos", JSON.stringify(updatedTodos));
     localStorage.removeItem("selectedTodo");
 
+    setDescription("");
     navigate("/");
   };
 
