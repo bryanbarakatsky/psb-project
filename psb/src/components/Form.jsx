@@ -87,6 +87,7 @@ const Form = () => {
           checked={completed}
           onChange={handleCompleted}
           className="w-4 h-4"
+          name="todoCompleted"
         />
         <span>Completed</span>
       </label>
