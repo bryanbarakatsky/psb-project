@@ -20,16 +20,18 @@ const Form = () => {
 
   const datetime = new Intl.DateTimeFormat("en-US", options).format(Date.now());
 
-  const [description, setDescription] = useState(storedTodo?.todoDescription || "");
-  const [completed, setCompleted] = useState(storedTodo?.todoCompleted || false);
-  const [dateCreated] = useState(storedTodo?.todoDateCreated || datetime.replace(",", "@"));
+  const [description, setDescription] = useState(storedTodo?.description || "");
+  const [completed, setCompleted] = useState(storedTodo?.isCompleted || 0);
+  const [dateCreated] = useState(
+    storedTodo?.dateCreated || datetime.replace(",", "@")
+  );
 
   const handleChangeInput = (val) => {
     setDescription(val);
   };
 
   const handleCompleted = () => {
-    setCompleted(!completed);
+    setCompleted(!completed ? 1 : 0);
   };
 
   // const handleSubmit = (e) => {
@@ -59,23 +61,23 @@ const Form = () => {
   //   navigate("/");
   // };
 
-
   const handleSubmit = async () => {
-    if(storedTodo){
+    console.log(storedTodo);
+    if (storedTodo) {
       await handleEdit();
     } else {
       await handleAdd();
     }
-  }
+  };
 
-  const handleAdd  = async (e) => {
+  const handleAdd = async (e) => {
     e.preventDefault();
-    try{
-      const response = await axios.post('http://localhost:5000/add-task', {
-        "description": description,
-        "isCompleted": completed,
+    try {
+      const response = await axios.post("http://localhost:5000/add-task", {
+        description: description,
+        isCompleted: completed,
       });
-      if(response.status === 200){
+      if (response.status === 201) {
         console.log("Task added successfully:", response.data);
         setDescription("");
         localStorage.removeItem("selectedTodo");
@@ -83,19 +85,22 @@ const Form = () => {
       } else {
         console.error("Failed to add task:", response.statusText);
       }
-    }
-    catch(error){
+    } catch (error) {
       console.error("Error submitting form:", error);
     }
-  }
+  };
 
   const handleEdit = async () => {
-    try{
-      const response = await axios.put(`http://localhost:5000/update-task/${storedTodo._id}`, {
-        "description": description,
-        "isCompleted": completed,
-      });
-      if(response.status === 200){
+    try {
+      console.log(storedTodo, storedTodo.id);
+      const response = await axios.put(
+        `http://localhost:5000/edit-task/${storedTodo.id}`,
+        {
+          description: description,
+          isCompleted: completed,
+        }
+      );
+      if (response.status === 200) {
         console.log("Task updated successfully:", response.data);
         setDescription("");
         localStorage.removeItem("selectedTodo");
@@ -103,18 +108,19 @@ const Form = () => {
       } else {
         console.error("Failed to update task:", response.statusText);
       }
-    }
-    catch(error){
+    } catch (error) {
       console.error("Error submitting form:", error);
     }
-  }
+  };
 
   return (
     <form
       onSubmit={handleSubmit}
       className="p-6 flex flex-col gap-4 max-w-lg mx-auto border rounded-2xl shadow-md bg-white"
     >
-      <h3 className="text-3xl font-semibold text-center mb-4">Add / Edit Todo</h3>
+      <h3 className="text-3xl font-semibold text-center mb-4">
+        Add / Edit Todo
+      </h3>
 
       <label className="flex flex-col">
         <span className="font-medium mb-1">Description:</span>

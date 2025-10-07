@@ -39,3 +39,14 @@ def get_tasks():
     query = "SELECT * FROM todos"
     tasks = db.fetch(query, is_all=True)
     return jsonify(tasks), 200
+
+
+@all_routes_bp.route('/mark-done/<int:task_id>', methods=['PUT'])
+def mark_done(task_id):
+    data = request.json
+    is_completed = data.get('isCompleted', False)
+
+    db = DataAccess(host='localhost', user='root', database='tododatabase')
+    query = f"UPDATE todos SET isCompleted = '{is_completed}' WHERE id = {task_id}"
+    db.execute(query)
+    return jsonify({'message': 'Task updated'}), 200

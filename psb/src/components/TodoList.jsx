@@ -17,33 +17,49 @@ export const TodoList = () => {
 
   useEffect(() => {
     localStorage.removeItem("selectedTodo");
+
+    const fetchData = async () => {
+      try {
+        const res = await axios.get("http://localhost:5000/tasks");
+        console.log(res.data);
+        if (res.status === 200) {
+          setData(res.data);
+        } else {
+          console.error("Failed to fetch tasks:", res.statusText);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
     fetchData();
   }, []);
 
   useEffect(() => {
     localStorage.setItem("todos", JSON.stringify(data));
+    console.log("data", data);
   }, [data]);
 
   const handleCheckboxClick = (index) => {
     const newData = data.map((item, i) =>
-      i === index ? { ...item, todoCompleted: !item.todoCompleted } : item
+      i === index ? { ...item, isCompleted: !item.isCompleted ? 1 : 0 } : item
     );
     setData(newData);
   };
 
-  const fetchData = async () => {
-    try{
-      const res = await axios.get('http://localhost:5000/tasks');
-      if(res.status === 200){
-        setData(res.data);
+  const handleTickDone = async (index) => {
+    try {
+      const res = await axios.put(`http://localhost:5000/mark-done/${index}`, {
+        isCompleted: data[index].isCompleted,
+      });
+      if (res.status == 200) {
+        console.log("successful");
       } else {
-        console.error("Failed to fetch tasks:", res.statusText);
+        console.log("unsuccessful");
       }
+    } catch (e) {
+      console.log(e);
     }
-    catch(err){
-      console.log(err);
-    }
-  }
+  };
 
   const formatDate = (isoString) => {
     const date = new Date(isoString);
@@ -85,7 +101,7 @@ export const TodoList = () => {
 
           <TableBody>
             {data.map((row, id) => {
-              const isDone = row.todoCompleted;
+              const isDone = row.isCompleted;
               const textClass = isDone ? "line-through text-gray-500" : "";
               const stateColor = isDone ? "!text-green-500" : "!text-gray-500";
               const canEdit = isDone ? "N/A" : "Edit";
@@ -99,11 +115,11 @@ export const TodoList = () => {
                   }}
                 >
                   <TableCell className={textClass}>
-                    {row.todoDescription || "(No description)"}
+                    {row.description || "(No description)"}
                   </TableCell>
 
                   <TableCell align="right" className={textClass}>
-                    {formatDate(row.todoDateCreated)}
+                    {formatDate(row.dateCreated)}
                   </TableCell>
 
                   <TableCell
@@ -129,7 +145,11 @@ export const TodoList = () => {
 
                   <TableCell>
                     <Checkbox
-                      onClick={() => handleCheckboxClick(id)}
+                      onClick={() => {
+                        handleCheckboxClick(id);
+
+                        handleTickDone(row.id);
+                      }}
                       color={isDone ? "success" : "default"}
                       checked={isDone}
                     />
@@ -140,9 +160,11 @@ export const TodoList = () => {
           </TableBody>
         </Table>
       </TableContainer>
-      {((data && data.length < 1) || !data) && <h1 className="text-gray-500 flex text-center justify-center">
-        No tasks found. Please add a task.
-      </h1>}
+      {((data && data.length < 1) || !data) && (
+        <h1 className="text-gray-500 flex text-center justify-center">
+          No tasks found. Please add a task.
+        </h1>
+      )}
       <div>
         <Link to="/add-edit">
           <Button variant="contained">Add</Button>
