@@ -1,45 +1,45 @@
-import React, { useState, useEffect } from 'react'
-import Table from '@mui/material/Table'
-import TableBody from '@mui/material/TableBody'
-import TableCell from '@mui/material/TableCell'
-import TableContainer from '@mui/material/TableContainer'
-import TableHead from '@mui/material/TableHead'
-import TableRow from '@mui/material/TableRow'
-import Paper from '@mui/material/Paper'
-import Button from '@mui/material/Button'
-import Checkbox from '@mui/material/Checkbox'
-import { Link } from 'react-router'
-import { initialData } from '../data/todoData'
+import React, { useState, useEffect } from "react";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import Paper from "@mui/material/Paper";
+import Button from "@mui/material/Button";
+import Checkbox from "@mui/material/Checkbox";
+import { Link } from "react-router";
+import { initialData } from "../data/todoData";
 
 export const TodoList = () => {
   const [data, setData] = useState(() => {
-    const stored = localStorage.getItem('todos')
-    return stored ? JSON.parse(stored) : initialData
-  })
+    const stored = localStorage.getItem("todos");
+    return stored ? JSON.parse(stored) : initialData;
+  });
 
   useEffect(() => {
     localStorage.removeItem("selectedTodo");
-  },[])
+  }, []);
 
   useEffect(() => {
-    localStorage.setItem('todos', JSON.stringify(data))
-  }, [data])
+    localStorage.setItem("todos", JSON.stringify(data));
+  }, [data]);
 
   const handleCheckboxClick = (index) => {
     const newData = data.map((item, i) =>
       i === index ? { ...item, todoCompleted: !item.todoCompleted } : item
-    )
-    setData(newData)
-  }
+    );
+    setData(newData);
+  };
 
   const formatDate = (isoString) => {
-    const date = new Date(isoString)
-    return isNaN(date) ? 'Invalid date' : date.toLocaleString()
-  }
+    const date = new Date(isoString);
+    return isNaN(date) ? "Invalid date" : date.toLocaleString();
+  };
 
   const handleEditClick = (row) => {
-    localStorage.setItem('selectedTodo', JSON.stringify(row))
-  }
+    localStorage.setItem("selectedTodo", JSON.stringify(row));
+  };
 
   return (
     <div className="flex flex-col gap-10 items-center justify-center">
@@ -49,21 +49,21 @@ export const TodoList = () => {
           maxWidth: 1200,
           boxShadow: 1,
           borderRadius: 2,
-          overflowY: 'auto',
+          overflowY: "auto",
           maxHeight: 500,
         }}
       >
         <Table sx={{ minWidth: 1200 }} stickyHeader aria-label="todo table">
           <TableHead>
-            <TableRow sx={{ backgroundColor: '#f3f4f6' }}>
-              <TableCell sx={{ fontWeight: 'bold' }}>Description</TableCell>
-              <TableCell sx={{ fontWeight: 'bold' }} align="right">
+            <TableRow sx={{ backgroundColor: "#f3f4f6" }}>
+              <TableCell sx={{ fontWeight: "bold" }}>Description</TableCell>
+              <TableCell sx={{ fontWeight: "bold" }} align="right">
                 Date Created
               </TableCell>
-              <TableCell sx={{ fontWeight: 'bold' }} align="right">
+              <TableCell sx={{ fontWeight: "bold" }} align="right">
                 Action
               </TableCell>
-              <TableCell sx={{ fontWeight: 'bold' }} align="right">
+              <TableCell sx={{ fontWeight: "bold" }} align="right">
                 Status
               </TableCell>
               <TableCell />
@@ -72,21 +72,21 @@ export const TodoList = () => {
 
           <TableBody>
             {data.map((row, id) => {
-              const isDone = row.todoCompleted
-              const textClass = isDone ? 'line-through text-gray-500' : ''
-              const stateColor = isDone ? '!text-green-500' : '!text-gray-500'
-              const canEdit = isDone ? 'N/A' : 'Edit'
+              const isDone = row.todoCompleted;
+              const textClass = isDone ? "line-through text-gray-500" : "";
+              const stateColor = isDone ? "!text-green-500" : "!text-gray-500";
+              const canEdit = isDone ? "N/A" : "Edit";
 
               return (
                 <TableRow
                   key={row._id}
                   sx={{
-                    '&:last-child td, &:last-child th': { border: 0 },
-                    '&:hover': { backgroundColor: '#f9fafb' },
+                    "&:last-child td, &:last-child th": { border: 0 },
+                    "&:hover": { backgroundColor: "#f9fafb" },
                   }}
                 >
                   <TableCell className={textClass}>
-                    {row.todoDescription || '(No description)'}
+                    {row.todoDescription || "(No description)"}
                   </TableCell>
 
                   <TableCell align="right" className={textClass}>
@@ -96,34 +96,33 @@ export const TodoList = () => {
                   <TableCell
                     align="right"
                     className={`${
-                      !isDone ? '!text-red-500 cursor-pointer' : '!text-gray-400'
+                      !isDone
+                        ? "!text-red-500 cursor-pointer"
+                        : "!text-gray-400"
                     } hover:!text-blue-500`}
                   >
                     {!isDone ? (
-                      <Link
-                        to="/add-edit"
-                        onClick={() => handleEditClick(row)}
-                      >
+                      <Link to="/add-edit" onClick={() => handleEditClick(row)}>
                         {canEdit}
                       </Link>
                     ) : (
-                      'N/A'
+                      "N/A"
                     )}
                   </TableCell>
 
                   <TableCell align="right" className={stateColor}>
-                    {isDone ? 'Done' : 'Not Done'}
+                    {isDone ? "Done" : "Not Done"}
                   </TableCell>
 
                   <TableCell>
                     <Checkbox
                       onClick={() => handleCheckboxClick(id)}
-                      color={isDone ? 'success' : 'default'}
+                      color={isDone ? "success" : "default"}
                       checked={isDone}
                     />
                   </TableCell>
                 </TableRow>
-              )
+              );
             })}
           </TableBody>
         </Table>
@@ -135,7 +134,7 @@ export const TodoList = () => {
         </Link>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default TodoList
+export default TodoList;

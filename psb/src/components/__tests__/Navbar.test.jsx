@@ -4,17 +4,15 @@ import "@testing-library/jest-dom";
 import { BrowserRouter } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
 
-import NavBar from "../NavBar";
-
-// successful tests
-
-test("renders navbar", () => {
+import Layout from "../Layout";
+test("renders layout", () => {
   render(
     <BrowserRouter>
-      <NavBar />
+      <Layout />
     </BrowserRouter>
   );
   expect(screen.getByText(/Todo App/i)).toBeInTheDocument();
+  expect(screen.getByText(/QA Ltd 2019/i)).toBeInTheDocument();
 });
 
 test("logo navigates to home when clicked", async () => {
