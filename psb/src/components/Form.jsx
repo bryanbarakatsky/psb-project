@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, use } from "react";
+import axios from "axios";
 import { useNavigate } from "react-router";
 
 const Form = () => {
   const navigate = useNavigate();
 
   const storedTodo = JSON.parse(localStorage.getItem("selectedTodo")) || null;
-  const existingTodos = JSON.parse(localStorage.getItem("todos")) || [];
+  // const existingTodos = JSON.parse(localStorage.getItem("todos")) || [];
 
   const options = {
     year: "numeric",
@@ -31,32 +32,82 @@ const Form = () => {
     setCompleted(!completed);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
 
-    const updatedTodo = {
-      _id: storedTodo?._id || existingTodos.length + 1,
-      todoDescription: description,
-      todoDateCreated: dateCreated,
-      todoCompleted: completed,
-    };
+  //   const updatedTodo = {
+  //     _id: storedTodo?._id || existingTodos.length + 1,
+  //     todoDescription: description,
+  //     todoDateCreated: dateCreated,
+  //     todoCompleted: completed,
+  //   };
 
-    let updatedTodos;
+  //   let updatedTodos;
 
-    if (storedTodo) {
-      updatedTodos = existingTodos.map((item) =>
-        item._id === storedTodo._id ? updatedTodo : item
-      );
+  //   if (storedTodo) {
+  //     updatedTodos = existingTodos.map((item) =>
+  //       item._id === storedTodo._id ? updatedTodo : item
+  //     );
+  //   } else {
+  //     updatedTodos = [...existingTodos, updatedTodo];
+  //   }
+
+  //   localStorage.setItem("todos", JSON.stringify(updatedTodos));
+  //   localStorage.removeItem("selectedTodo");
+
+  //   setDescription("");
+  //   navigate("/");
+  // };
+
+
+  const handleSubmit = async () => {
+    if(storedTodo){
+      await handleEdit();
     } else {
-      updatedTodos = [...existingTodos, updatedTodo];
+      await handleAdd();
     }
+  }
 
-    localStorage.setItem("todos", JSON.stringify(updatedTodos));
-    localStorage.removeItem("selectedTodo");
+  const handleAdd  = async (e) => {
+    e.preventDefault();
+    try{
+      const response = await axios.post('http://localhost:5000/add-task', {
+        "description": description,
+        "isCompleted": completed,
+      });
+      if(response.status === 200){
+        console.log("Task added successfully:", response.data);
+        setDescription("");
+        localStorage.removeItem("selectedTodo");
+        navigate("/");
+      } else {
+        console.error("Failed to add task:", response.statusText);
+      }
+    }
+    catch(error){
+      console.error("Error submitting form:", error);
+    }
+  }
 
-    setDescription("");
-    navigate("/");
-  };
+  const handleEdit = async () => {
+    try{
+      const response = await axios.put(`http://localhost:5000/update-task/${storedTodo._id}`, {
+        "description": description,
+        "isCompleted": completed,
+      });
+      if(response.status === 200){
+        console.log("Task updated successfully:", response.data);
+        setDescription("");
+        localStorage.removeItem("selectedTodo");
+        navigate("/");
+      } else {
+        console.error("Failed to update task:", response.statusText);
+      }
+    }
+    catch(error){
+      console.error("Error submitting form:", error);
+    }
+  }
 
   return (
     <form

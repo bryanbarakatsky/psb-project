@@ -10,15 +10,14 @@ import Button from "@mui/material/Button";
 import Checkbox from "@mui/material/Checkbox";
 import { Link } from "react-router";
 import { initialData } from "../data/todoData";
+import axios from "axios";
 
 export const TodoList = () => {
-  const [data, setData] = useState(() => {
-    const stored = localStorage.getItem("todos");
-    return stored ? JSON.parse(stored) : initialData;
-  });
+  const [data, setData] = useState([]);
 
   useEffect(() => {
     localStorage.removeItem("selectedTodo");
+    fetchData();
   }, []);
 
   useEffect(() => {
@@ -31,6 +30,20 @@ export const TodoList = () => {
     );
     setData(newData);
   };
+
+  const fetchData = async () => {
+    try{
+      const res = await axios.get('http://localhost:5000/tasks');
+      if(res.status === 200){
+        setData(res.data);
+      } else {
+        console.error("Failed to fetch tasks:", res.statusText);
+      }
+    }
+    catch(err){
+      console.log(err);
+    }
+  }
 
   const formatDate = (isoString) => {
     const date = new Date(isoString);
@@ -127,7 +140,9 @@ export const TodoList = () => {
           </TableBody>
         </Table>
       </TableContainer>
-
+      {((data && data.length < 1) || !data) && <h1 className="text-gray-500 flex text-center justify-center">
+        No tasks found. Please add a task.
+      </h1>}
       <div>
         <Link to="/add-edit">
           <Button variant="contained">Add</Button>
