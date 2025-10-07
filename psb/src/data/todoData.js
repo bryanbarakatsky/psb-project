@@ -1,4 +1,4 @@
-[
+export var initialData = [
   {
     "_id": "1",
     "todoDescription": "Buy groceries for the week",

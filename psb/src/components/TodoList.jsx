@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Table from '@mui/material/Table'
 import TableBody from '@mui/material/TableBody'
 import TableCell from '@mui/material/TableCell'
@@ -6,43 +6,54 @@ import TableContainer from '@mui/material/TableContainer'
 import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
-import Button from '@mui/material/Button';
+import Button from '@mui/material/Button'
 import Checkbox from '@mui/material/Checkbox'
-import { Link } from "react-router";
-
-const createData = (description, dateCreated, state) => {
-  return { description, dateCreated, state }
-}
-
-const initialData = [
-  createData('Finish project proposal', '2025-10-06', 'Done'),
-  createData('Review pull requests', '2025-10-05', 'Done'),
-  createData('Team stand-up meeting', '2025-10-06', 'Not Done'),
-  createData('Send client invoice', '2025-10-04', 'Done'),
-  createData('Plan sprint backlog', '2025-10-03', 'Not Done'),  
-  createData('Finish project proposal', '2025-10-06', 'Done'),
-  createData('Review pull requests', '2025-10-05', 'Done'),
-  createData('Team stand-up meeting', '2025-10-06', 'Not Done'),
-  createData('Send client invoice', '2025-10-04', 'Done'),
-  createData('Plan sprint backlog', '2025-10-03', 'Not Done'),
-]
+import { Link } from 'react-router'
+import { initialData } from '../data/todoData'
 
 export const TodoList = () => {
-  const [data, setData] = useState(initialData)
+  const [data, setData] = useState(() => {
+    const stored = localStorage.getItem('todos')
+    return stored ? JSON.parse(stored) : initialData
+  })
+
+  useEffect(() => {
+    localStorage.removeItem("selectedTodo");
+  },[])
+
+  useEffect(() => {
+    localStorage.setItem('todos', JSON.stringify(data))
+  }, [data])
 
   const handleCheckboxClick = (index) => {
-    const newData = [...data]
-    newData[index].state = newData[index].state === 'Done' ? 'Not Done' : 'Done'
+    const newData = data.map((item, i) =>
+      i === index ? { ...item, todoCompleted: !item.todoCompleted } : item
+    )
     setData(newData)
+  }
+
+  const formatDate = (isoString) => {
+    const date = new Date(isoString)
+    return isNaN(date) ? 'Invalid date' : date.toLocaleString()
+  }
+
+  const handleEditClick = (row) => {
+    localStorage.setItem('selectedTodo', JSON.stringify(row))
   }
 
   return (
     <div className="flex flex-col gap-10 items-center justify-center">
       <TableContainer
         component={Paper}
-        sx={{ maxWidth: 1200, boxShadow: 1, borderRadius: 2, overflow: scroll, maxHeight: 500 }}
+        sx={{
+          maxWidth: 1200,
+          boxShadow: 1,
+          borderRadius: 2,
+          overflowY: 'auto',
+          maxHeight: 500,
+        }}
       >
-        <Table sx={{ minWidth: 1200 }} aria-label="todo table">
+        <Table sx={{ minWidth: 1200 }} stickyHeader aria-label="todo table">
           <TableHead>
             <TableRow sx={{ backgroundColor: '#f3f4f6' }}>
               <TableCell sx={{ fontWeight: 'bold' }}>Description</TableCell>
@@ -55,37 +66,61 @@ export const TodoList = () => {
               <TableCell sx={{ fontWeight: 'bold' }} align="right">
                 Status
               </TableCell>
-              <TableCell></TableCell>
+              <TableCell />
             </TableRow>
           </TableHead>
+
           <TableBody>
             {data.map((row, id) => {
-              const isDone = row.state === 'Done'
+              const isDone = row.todoCompleted
               const textClass = isDone ? 'line-through text-gray-500' : ''
-              const stateColor = isDone? '!text-green-500' : '!text-gray-500'
+              const stateColor = isDone ? '!text-green-500' : '!text-gray-500'
               const canEdit = isDone ? 'N/A' : 'Edit'
+
               return (
                 <TableRow
-                  key={id}
+                  key={row._id}
                   sx={{
                     '&:last-child td, &:last-child th': { border: 0 },
                     '&:hover': { backgroundColor: '#f9fafb' },
                   }}
                 >
                   <TableCell className={textClass}>
-                    {row.description}
+                    {row.todoDescription || '(No description)'}
                   </TableCell>
+
                   <TableCell align="right" className={textClass}>
-                    {row.dateCreated}
+                    {formatDate(row.todoDateCreated)}
                   </TableCell>
-                  <TableCell align="right" className={`cursor-pointer ${!isDone ? '!text-red-500' : '!text-gray-500'} hover:!text-blue-500`}>
-                    <Link to="/add-edit">{canEdit}</Link>
+
+                  <TableCell
+                    align="right"
+                    className={`${
+                      !isDone ? '!text-red-500 cursor-pointer' : '!text-gray-400'
+                    } hover:!text-blue-500`}
+                  >
+                    {!isDone ? (
+                      <Link
+                        to="/add-edit"
+                        onClick={() => handleEditClick(row)}
+                      >
+                        {canEdit}
+                      </Link>
+                    ) : (
+                      'N/A'
+                    )}
                   </TableCell>
+
                   <TableCell align="right" className={stateColor}>
-                    {row.state}
+                    {isDone ? 'Done' : 'Not Done'}
                   </TableCell>
+
                   <TableCell>
-                    <Checkbox onClick={() => handleCheckboxClick(id)} color={row.state === 'Done' ? 'success' : 'default'} checked={row.state == 'Done'} />
+                    <Checkbox
+                      onClick={() => handleCheckboxClick(id)}
+                      color={isDone ? 'success' : 'default'}
+                      checked={isDone}
+                    />
                   </TableCell>
                 </TableRow>
               )
@@ -93,8 +128,11 @@ export const TodoList = () => {
           </TableBody>
         </Table>
       </TableContainer>
-      <div className='ml-right'>
-        <Link to="/add-edit"><Button variant="contained">Add</Button></Link>
+
+      <div>
+        <Link to="/add-edit">
+          <Button variant="contained">Add</Button>
+        </Link>
       </div>
     </div>
   )
